@@ -1,56 +1,186 @@
-# Welcome to your Expo app 👋
+## React Native Basics
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+### What is React Native?
 
-## Get started
+React Native is a framework for creating mobile applications using React, JavaScript, or TypeScript. It allows developers to create applications for platforms such as Android and iOS while sharing much of the application code between platforms.
 
-1. Install dependencies
+React Native applications are built using components. Components are reusable parts of the user interface, such as buttons, text fields, lists, and screens.
 
-   ```bash
-   npm install
-   ```
+### Components
 
-2. Start the app
+A React Native application is made from components.
 
-   ```bash
-   npx expo start
-   ```
+For example:
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```tsx
+function Welcome() {
+  return (
+    <View>
+      <Text>Hello React Native!</Text>
+    </View>
+  );
+}
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+`View` is commonly used as a container, while `Text` displays text.
 
-### Other setup steps
+Components make applications easier to organize and reuse.
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+### JSX
 
-## Learn more
+React Native uses JSX to describe the user interface.
 
-To learn more about developing your project with Expo, look at the following resources:
+For example:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```tsx
+<Text>My To-Do List</Text>
+```
 
-## Join the community
+JSX looks similar to HTML, but React Native uses components designed for mobile applications.
 
-Join our community of developers creating universal apps.
+### State
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+State is data that can change while the application is running.
+
+In the To-Do application, state is used to store the current task and the list of To-Do items.
+
+```tsx
+const [task, setTask] = useState('');
+const [todos, setTodos] = useState<Todo[]>([]);
+```
+
+`task` contains the current text entered by the user.
+
+`todos` contains the list of tasks.
+
+The `setTask` and `setTodos` functions are used to update the state.
+
+When state changes, React Native updates the user interface.
+
+### Props
+
+Props are values passed from one component to another.
+
+They allow components to receive information from their parent component.
+
+For example:
+
+```tsx
+<MyButton title="Add task" />
+```
+
+The `title` is a prop passed to the component.
+
+Props are useful when creating reusable components.
+
+### Hooks
+
+React Hooks provide functionality that can be used inside functional components.
+
+One important Hook is `useState`.
+
+Another commonly used Hook is `useEffect`, which can be used to perform actions when a component is rendered or when data changes.
+
+Example:
+
+```tsx
+const [count, setCount] = useState(0);
+```
+
+### Text Input
+
+React Native provides `TextInput` for entering text.
+
+In the To-Do application:
+
+```tsx
+<TextInput
+  placeholder="Enter a task..."
+  value={task}
+  onChangeText={setTask}
+/>
+```
+
+The `value` is connected to the application's state, and `onChangeText` updates the state when the user types.
+
+### User Interaction
+
+React Native provides components such as `Pressable` for handling user interaction.
+
+For example:
+
+```tsx
+<Pressable onPress={addTodo}>
+  <Text>Add</Text>
+</Pressable>
+```
+
+When the user presses the button, the `addTodo` function is executed.
+
+### Lists
+
+The To-Do application uses `FlatList` to display the tasks.
+
+```tsx
+<FlatList
+  data={todos}
+  keyExtractor={(item) => item.id}
+  renderItem={({ item }) => (
+    <Text>{item.title}</Text>
+  )}
+/>
+```
+
+`FlatList` is designed for displaying lists efficiently.
+
+The `data` property contains the items and `renderItem` determines how each item is displayed.
+
+### Conditional Styling
+
+The application changes the appearance of completed tasks.
+
+```tsx
+<Text
+  style={[
+    styles.todoText,
+    item.completed && styles.completedText,
+  ]}
+>
+  {item.title}
+</Text>
+```
+
+When `completed` is true, the completed style is applied.
+
+This makes completed tasks appear crossed out.
+
+### Styling
+
+React Native uses `StyleSheet` to define styles.
+
+For example:
+
+```tsx
+const styles = StyleSheet.create({
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+  },
+});
+```
+
+React Native styling is similar to CSS, but it uses JavaScript or TypeScript objects and React Native-specific properties.
+
+### Data Flow in the To-Do Application
+
+The basic flow of the application is:
+
+1. The user enters a task.
+2. The text is stored in state.
+3. The user presses the Add button.
+4. A new To-Do object is created.
+5. The To-Do is added to the list.
+6. `FlatList` displays the updated list.
+7. The user can mark the task as completed or delete it.
+
+This project demonstrates how React Native components, state, user input, events, lists, and styling can be combined to create a functional mobile application.
