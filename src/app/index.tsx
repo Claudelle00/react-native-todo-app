@@ -1,98 +1,186 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useState } from 'react';
+import {
+  FlatList,
+  Button,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+type Todo = {
+  id: string;
+  title: string;
+  completed: boolean;
+};
 
 export default function HomeScreen() {
+  const [task, setTask] = useState('');
+  const [todos, setTodos] = useState<Todo[]>([]);
+
+  function addTodo() {
+    const trimmedTask = task.trim();
+
+    if (trimmedTask === '') {
+      return;
+    }
+
+    const newTodo: Todo = {
+      id: Date.now().toString(),
+      title: trimmedTask,
+      completed: false,
+    };
+
+    setTodos((currentTodos) => [...currentTodos, newTodo]);
+    setTask('');
+  }
+
+  function toggleTodo(id: string) {
+    setTodos((currentTodos) =>
+      currentTodos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
+  }
+
+  function deleteTodo(id: string) {
+    setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== id));
+  }
+
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+    <View style={styles.container}>
+      <Text style={styles.title}>My To-Do List</Text>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter a task..."
+          value={task}
+          onChangeText={setTask}
+        />
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
+        <Button title="Add" onPress={addTodo} />
+      </View>
 
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+      <FlatList
+        data={todos}
+        keyExtractor={(item) => item.id}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>
+            No tasks yet. Add your first task!
+          </Text>
+        }
+        renderItem={({ item }) => (
+          <View style={styles.todoItem}>
+            <Button
+              title={item.completed ? `✓ ${item.title}` : `○ ${item.title}`}
+              onPress={() => toggleTodo(item.id)}
+            />
+
+            <Button
+              title="Delete"
+              color="#d00"
+              onPress={() => deleteTodo(item.id)}
+            />
+          </View>
+        )}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
+    padding: 20,
+    paddingTop: 70,
+    backgroundColor: '#fff',
   },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
+
   title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    marginBottom: 25,
+  },
+
+  inputContainer: {
+    flexDirection: 'row',
+    marginBottom: 20,
+  },
+
+  input: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+  },
+
+  addButton: {
+    marginLeft: 10,
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 18,
+    justifyContent: 'center',
+    borderRadius: 8,
+  },
+
+  addButtonPressed: {
+    opacity: 0.8,
+  },
+
+  addButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+
+  todoItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+    marginBottom: 10,
+    backgroundColor: '#f2f2f2',
+    borderRadius: 8,
+  },
+
+  todoTextContainer: {
+    flex: 1,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+
+  todoTextPressed: {
+    opacity: 0.7,
+  },
+
+  todoText: {
+    fontSize: 18,
+  },
+
+  completedText: {
+    textDecorationLine: 'line-through',
+    color: '#888',
+  },
+
+  deleteButton: {
+    padding: 8,
+    borderRadius: 6,
+  },
+
+  deleteButtonPressed: {
+    opacity: 0.7,
+  },
+
+  deleteText: {
+    color: '#d00',
+    fontWeight: 'bold',
+  },
+
+  emptyText: {
     textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+    marginTop: 40,
+    color: '#888',
+    fontSize: 16,
   },
 });
