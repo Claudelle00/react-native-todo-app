@@ -103,17 +103,7 @@ In the To-Do application:
 
 The `value` is connected to the application's state, and `onChangeText` updates the state when the user types.
 
-### User Interaction
 
-React Native provides components such as `Pressable` for handling user interaction.
-
-For example:
-
-```tsx
-<Pressable onPress={addTodo}>
-  <Text>Add</Text>
-</Pressable>
-```
 
 When the user presses the button, the `addTodo` function is executed.
 
